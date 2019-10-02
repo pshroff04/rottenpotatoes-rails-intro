@@ -5,15 +5,15 @@
   Include:
   - @all_ratings.each do |rating|
     = rating
-    = check_box_tag "ratings[#{rating}]"
+    = check_box_tag "ratings[#{rating}]",  rating, if params[:ratings]; params[:ratings].include?(rating) end
   = submit_tag 'Refresh'
 
 %table#movies.table.table-striped.col-md-12
   %thead
     %tr
-      %th= link_to "Movie Title", controller: "movies", action: "index",  sort: "title"
+      %th= link_to "Movie Title", controller: "movies", action: "index",  sort: "title", ratings: params[:ratings]
       %th Rating
-      %th= link_to "Release Date", controller: "movies", action: "index",  sort: "date"
+      %th= link_to "Release Date", controller: "movies", action: "index",  sort: "release_date", ratings: params[:ratings]
       %th More Info
   %tbody
     - @movies.each do |movie|

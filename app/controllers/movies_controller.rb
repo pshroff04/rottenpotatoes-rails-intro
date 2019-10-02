@@ -11,7 +11,10 @@ class MoviesController < ApplicationController
   end
 
   def index
-    if params.key?(:sort)
+    print params
+    if params.key?(:sort) and params.key?(:ratings)
+      selectRatingsWithSort(params[:sort], params[:ratings])
+    elsif params.key?(:sort) 
       sortMovies(params[:sort])
     elsif params.key?(:ratings)
       selectRatings(params[:ratings])
@@ -55,14 +58,14 @@ class MoviesController < ApplicationController
   end
   
   def sortMovies(sortCol)
-    if sortCol == "title" 
-      @movies = Movie.order(:title)
-    elsif sortCol == "date"
-      @movies = Movie.order(:release_date)
-    end
+    @movies = Movie.order(sortCol)
   end
   
   def selectRatings(ratingHash)
     @movies = Movie.with_ratings(ratingHash.keys)
+  end
+  
+  def selectRatingsWithSort(sortCol, ratingHash)
+    @movies = Movie.with_ratings(ratingHash.keys).order(sortCol)
   end
 end
