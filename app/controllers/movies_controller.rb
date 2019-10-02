@@ -12,15 +12,15 @@ class MoviesController < ApplicationController
 
   def index
     if params.key?(:sort)
-      if params[:sort] == "title" 
-        @movies = Movie.order(:title)
-      elsif params[:sort] == "date"
-        @movies = Movie.order(:release_date)
-      end
+      sortMovies(params[:sort])
+    elsif params.key?(:ratings)
+      selectRatings(params[:ratings])
     else
       @movies = Movie.all
     end
+    listRating
   end
+  
 
   def new
     # default: render 'new' template
@@ -49,5 +49,20 @@ class MoviesController < ApplicationController
     flash[:notice] = "Movie '#{@movie.title}' deleted."
     redirect_to movies_path
   end
-
+  
+  def listRating
+    @all_ratings = Movie.uniq.pluck(:rating)
+  end
+  
+  def sortMovies(sortCol)
+    if sortCol == "title" 
+      @movies = Movie.order(:title)
+    elsif sortCol == "date"
+      @movies = Movie.order(:release_date)
+    end
+  end
+  
+  def selectRatings(ratingHash)
+    @movies = Movie.with_ratings(ratingHash.keys)
+  end
 end
