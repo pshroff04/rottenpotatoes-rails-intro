@@ -3,24 +3,41 @@ class MoviesController < ApplicationController
   def movie_params
     params.require(:movie).permit(:title, :rating, :description, :release_date, :sort)
   end
-
+  
+  #movie_path(:id) -> hits here
   def show
     id = params[:id] # retrieve movie ID from URI route
     @movie = Movie.find(id) # look up movie by unique ID
     # will render app/views/movies/show.<extension> by default
   end
-
+  
+  #movies_path -> hit index
   def index
-    print params
+    #print params
+    
+    if !params.key?(:sort) and session.key?(:sort)
+      params[:sort] = session[:sort]
+    end
+    if !params.key?(:ratings) and session.key?(:ratings)
+      params[:ratings] = session[:ratings]
+    end
+    
+    
     if params.key?(:sort) and params.key?(:ratings)
       selectRatingsWithSort(params[:sort], params[:ratings])
+    
     elsif params.key?(:sort) 
       sortMovies(params[:sort])
+    
     elsif params.key?(:ratings)
       selectRatings(params[:ratings])
+    
     else
       @movies = Movie.all
     end
+    #update the session
+    if params.key?(:ratings); session[:ratings] = params[:ratings] end
+    if params.key?(:sort); session[:sort] = params[:sort] end
     listRating
   end
   
@@ -32,7 +49,8 @@ class MoviesController < ApplicationController
   def create
     @movie = Movie.create!(movie_params)
     flash[:notice] = "#{@movie.title} was successfully created."
-    redirect_to movies_path
+    flash.keep
+    redirect_to movies_path, session[:sort]
   end
 
   def edit
