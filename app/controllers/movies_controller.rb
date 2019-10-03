@@ -13,15 +13,13 @@ class MoviesController < ApplicationController
   
   #movies_path -> hit index
   def index
-    #print params
-    
+    #Get from session if params is not set
     if !params.key?(:sort) and session.key?(:sort)
       params[:sort] = session[:sort]
     end
     if !params.key?(:ratings) and session.key?(:ratings)
       params[:ratings] = session[:ratings]
     end
-    
     
     if params.key?(:sort) and params.key?(:ratings)
       selectRatingsWithSort(params[:sort], params[:ratings])
@@ -38,6 +36,8 @@ class MoviesController < ApplicationController
     #update the session
     if params.key?(:ratings); session[:ratings] = params[:ratings] end
     if params.key?(:sort); session[:sort] = params[:sort] end
+    
+    #set all_rating member
     listRating
   end
   
